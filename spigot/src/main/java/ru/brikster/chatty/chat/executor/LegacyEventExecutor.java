@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import ru.brikster.chatty.Chatty;
 import ru.brikster.chatty.api.chat.Chat;
@@ -28,10 +29,12 @@ import ru.brikster.chatty.chat.construct.ComponentFromContextConstructor;
 import ru.brikster.chatty.chat.message.context.MessageContextImpl;
 import ru.brikster.chatty.chat.message.transform.intermediary.IntermediateMessageTransformer;
 import ru.brikster.chatty.chat.message.transform.processor.MessageTransformStrategiesProcessor;
+import ru.brikster.chatty.chat.registry.MemoryChatRegistry;
 import ru.brikster.chatty.chat.selection.ChatSelector;
 import ru.brikster.chatty.chat.style.ChatStylePlayerGrouper;
 import ru.brikster.chatty.config.file.MessagesConfig;
 import ru.brikster.chatty.config.file.SettingsConfig;
+import ru.brikster.chatty.config.serdes.SerdesChatty;
 import ru.brikster.chatty.convert.component.InternalMiniMessageStringConverter;
 import ru.brikster.chatty.convert.message.LegacyToMiniMessageConverter;
 import ru.brikster.chatty.convert.message.MessageConverter;
@@ -39,6 +42,7 @@ import ru.brikster.chatty.proxy.ProxyService;
 
 import javax.inject.Inject;
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -53,7 +57,7 @@ import java.util.stream.Collectors;
 public final class LegacyEventExecutor implements Listener, EventExecutor {
 
     private final Map<Integer, MessageContext<String>> pendingMessages = new ConcurrentHashMap<>();
-    private InternalMiniMessageStringConverter internalMiniMessageStringConverter;
+    private final InternalMiniMessageStringConverter internalMiniMessageStringConverter;
 
     @Inject private ChatSelector selector;
     @Inject private ComponentFromContextConstructor componentFromContextConstructor;
@@ -65,6 +69,10 @@ public final class LegacyEventExecutor implements Listener, EventExecutor {
     @Inject private Logger logger;
     @Inject private ProxyService proxyService;
     @Inject private ChatStylePlayerGrouper chatStylePlayerGrouper;
+
+    public LegacyEventExecutor() {
+        this.internalMiniMessageStringConverter = new InternalMiniMessageStringConverter();;
+    }
 
     @Override
     public void execute(@NotNull Listener listener, @NotNull Event event) {
@@ -198,8 +206,8 @@ public final class LegacyEventExecutor implements Listener, EventExecutor {
                 callEventRunnable.run();
             }
 
-            String mmPME = internalMiniMessageStringConverter.componentToString(preMessageEvent.getMessage());
-            Component cmpMM = MiniMessage.miniMessage().deserialize(FontImageWrapper.replaceFontImages(middleContext.getSender(), mmPME));
+            String mmPME = FontImageWrapper.replaceFontImages(middleContext.getSender(), internalMiniMessageStringConverter.componentToString(preMessageEvent.getMessage()));
+            Component cmpMM = internalMiniMessageStringConverter.stringToComponent(mmPME);
             middleContext.setFormat(preMessageEvent.getFormat());
             middleContext.setMessage(cmpMM);
 
