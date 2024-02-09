@@ -33,6 +33,8 @@ import ru.brikster.chatty.chat.style.ChatStylePlayerGrouper;
 import ru.brikster.chatty.config.file.MessagesConfig;
 import ru.brikster.chatty.config.file.SettingsConfig;
 import ru.brikster.chatty.convert.component.InternalMiniMessageStringConverter;
+import ru.brikster.chatty.convert.message.LegacyToMiniMessageConverter;
+import ru.brikster.chatty.convert.message.MessageConverter;
 import ru.brikster.chatty.proxy.ProxyService;
 
 import javax.inject.Inject;
@@ -51,6 +53,7 @@ import java.util.stream.Collectors;
 public final class LegacyEventExecutor implements Listener, EventExecutor {
 
     private final Map<Integer, MessageContext<String>> pendingMessages = new ConcurrentHashMap<>();
+    private InternalMiniMessageStringConverter internalMiniMessageStringConverter;
 
     @Inject private ChatSelector selector;
     @Inject private ComponentFromContextConstructor componentFromContextConstructor;
@@ -195,10 +198,10 @@ public final class LegacyEventExecutor implements Listener, EventExecutor {
                 callEventRunnable.run();
             }
 
-            String mmPME = MiniMessage.miniMessage().serialize(preMessageEvent.getMessage());
-            Component cmpFIW = MiniMessage.miniMessage().deserialize(FontImageWrapper.replaceFontImages(preMessageEvent.getSender(), mmPME));
+            String mmPME = internalMiniMessageStringConverter.componentToString(preMessageEvent.getMessage());
+            Component cmpMM = MiniMessage.miniMessage().deserialize(FontImageWrapper.replaceFontImages(middleContext.getSender(), mmPME));
             middleContext.setFormat(preMessageEvent.getFormat());
-            middleContext.setMessage(cmpFIW);
+            middleContext.setMessage(cmpMM);
 
             Set<ChatStyle> styles = preMessageEvent.getStyles();
 
