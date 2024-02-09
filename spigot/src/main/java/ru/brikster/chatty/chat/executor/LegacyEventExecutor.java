@@ -4,6 +4,7 @@ import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -31,10 +32,13 @@ import ru.brikster.chatty.chat.selection.ChatSelector;
 import ru.brikster.chatty.chat.style.ChatStylePlayerGrouper;
 import ru.brikster.chatty.config.file.MessagesConfig;
 import ru.brikster.chatty.config.file.SettingsConfig;
+import ru.brikster.chatty.convert.component.InternalMiniMessageStringConverter;
 import ru.brikster.chatty.proxy.ProxyService;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -191,8 +195,10 @@ public final class LegacyEventExecutor implements Listener, EventExecutor {
                 callEventRunnable.run();
             }
 
+            String mmPME = MiniMessage.miniMessage().serialize(preMessageEvent.getMessage());
+            Component cmpFIW = MiniMessage.miniMessage().deserialize(FontImageWrapper.replaceFontImages(preMessageEvent.getSender(), mmPME));
             middleContext.setFormat(preMessageEvent.getFormat());
-            middleContext.setMessage(preMessageEvent.getMessage());
+            middleContext.setMessage(cmpFIW);
 
             Set<ChatStyle> styles = preMessageEvent.getStyles();
 
