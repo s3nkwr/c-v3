@@ -79,6 +79,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.6'
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'commons-io:commons-io:2.11.0'
+    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.6.1'
 }
 
 def templateSource = file('src/main/templates')

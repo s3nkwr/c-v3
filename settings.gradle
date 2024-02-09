@@ -1,2 +1,3 @@
-rootProject.name = 'chatty'
+//rootProject.name = 'Chatty'
+//cuz IDEA is bugged https://youtrack.jetbrains.com/issue/IDEA-317606/
 include('api', 'spigot')

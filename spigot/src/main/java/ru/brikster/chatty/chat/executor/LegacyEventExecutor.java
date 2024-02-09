@@ -1,5 +1,6 @@
 package ru.brikster.chatty.chat.executor;
 
+import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.jetbrains.annotations.NotNull;
+import ru.brikster.chatty.Chatty;
 import ru.brikster.chatty.api.chat.Chat;
 import ru.brikster.chatty.api.chat.ChatStyle;
 import ru.brikster.chatty.api.chat.message.context.MessageContext;
@@ -227,6 +229,9 @@ public final class LegacyEventExecutor implements Listener, EventExecutor {
                 if (groupIndex == 0) {
                     String stringFormat = LegacyComponentSerializer.legacySection().serialize(lateContext.getFormat());
                     String stringMessage = LegacyComponentSerializer.legacySection().serialize(lateContext.getMessage());
+                    if (Bukkit.getServer().getPluginManager().isPluginEnabled("ItemsAdder")) {
+                        stringMessage = FontImageWrapper.replaceFontImages(event.getPlayer(), stringMessage);
+                    }
                     stringFormat = stringFormat.replace("%", "%%");
                     stringFormat = stringFormat.replaceFirst(Pattern.quote("{player}"), Matcher.quoteReplacement("%1$s"));
                     stringFormat = stringFormat.replaceFirst(Pattern.quote("{message}"), Matcher.quoteReplacement("%2$s"));
