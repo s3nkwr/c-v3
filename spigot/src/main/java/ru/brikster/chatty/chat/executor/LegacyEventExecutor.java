@@ -236,7 +236,7 @@ public final class LegacyEventExecutor implements Listener, EventExecutor {
                     String stringFormat = LegacyComponentSerializer.legacySection().serialize(lateContext.getFormat());
                     String stringMessage = LegacyComponentSerializer.legacySection().serialize(lateContext.getMessage());
                     //if (Bukkit.getServer().getPluginManager().isPluginEnabled("ItemsAdder")) {
-                    stringMessage = FontImageWrapper.replaceFontImages(event.getPlayer(), stringMessage);
+                    // stringMessage = FontImageWrapper.replaceFontImages(event.getPlayer(), stringMessage);
                     //}
                     stringFormat = stringFormat.replace("%", "%%");
                     stringFormat = stringFormat.replaceFirst(Pattern.quote("{player}"), Matcher.quoteReplacement("%1$s"));
